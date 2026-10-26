@@ -70,7 +70,33 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;',
 function renderCourseGuide(){
   const el=document.getElementById('course攻略');
   if(!el)return;
-  el.innerHTML='<h3>'+esc(activeCourse)+'</h3><p>このコースの攻略情報を準備しています。</p><p>ショートカットの位置や、サンダーを使うタイミングを記録して攻略に役立てましょう。</p>';
+
+  const guides={
+    'マリオブラザーズサーキット':{
+      title:'マリオブラザーズサーキット',
+      points:[
+        'コーナーの手前で走行ラインを整え、無理な切り返しを減らす。',
+        'アイテムを使う前に、前方のコーナーとライバルの位置を確認する。',
+        'ショートカットは、実際に走って進入位置と必要なアイテムを確認してから狙う。'
+      ],
+      route:'まずはコース中央寄りの安定したラインを走り、コーナー出口で加速しやすい位置を探す。',
+      caution:'未確認のショートカットに無理に入ると減速することがある。最初は安全なラインを優先。'
+    }
+  };
+
+  const g=guides[activeCourse];
+
+  if(!g){
+    el.innerHTML='<h3>'+esc(activeCourse)+'</h3><p>このコースの攻略情報はまだ登録されていません。</p>';
+    return;
+  }
+
+  el.innerHTML=
+    '<h3>'+esc(g.title)+'</h3>'+
+    '<h4>攻略ポイント</h4><ul>'+
+    g.points.map(p=>'<li>'+esc(p)+'</li>').join('')+
+    '</ul><h4>おすすめルート</h4><p>'+esc(g.route)+'</p>'+
+    '<h4>注意点</h4><p>'+esc(g.caution)+'</p>';
 }
 function roadKey(){return '道中：'+document.getElementById('origin').value+' → '+document.getElementById('destination').value}
 function setPage(name){['Map','Record','Backup'].forEach(n=>{document.getElementById('page'+n).classList.toggle('hidden',n.toLowerCase()!==name);document.getElementById('tab'+n).classList.toggle('active',n.toLowerCase()===name)})}
