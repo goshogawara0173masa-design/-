@@ -38,16 +38,22 @@ main{max-width:760px;margin:auto;padding:14px}.tabs{display:flex;gap:8px;margin-
 <section id="pageRecord" class="hidden">
  <div class="card"><button class="secondary tiny" id="backMap">← コース選択へ</button><h2 id="activeTitle" style="margin-top:12px">コース</h2><p class="muted">このコースの記録は端末内に自動保存されます。</p></div>
  <div class="card"><h2>サンダーを記録</h2><p class="muted">位置は「周回-アイテム位置」の形式で入力（例：3-2）。サンダーが出なかったレースも必ず記録すると、発生率が正しく計算できます。</p>
- <label for="thunderPosition">発生位置</label><input id="thunderPosition" inputmode="numeric" placeholder="例：3-2" value="3-2">
+<label>発生位置</label>
+<div style="display:flex;align-items:center;gap:8px">
+  <input id="thunderLap" type="number" inputmode="numeric" min="1" placeholder="3">
+  <span>-</span>
+  <input id="thunderSlot" type="number" inputmode="numeric" min="1" placeholder="2">
+</div>
  <div class="btnrow"><button class="primary" id="addThunder">⚡ サンダーあり</button><button class="secondary" id="addNoThunder">○ サンダーなし</button></div>
  </div>
- <div class="card"><h2>サンダー発生率</h2><div class="statgrid"><div class="stat"><span>記録レース数</span><strong id="raceCount">0</strong></div><div class="stat"><span>サンダーあり</span><strong id="thunderCount">0</strong></div></div><div id="stats" class="muted" style="margin-top:12px">記録を追加すると、位置ごとの発生率が表示されます。</div></div>
- <div class="card">
-  <h2>🏁 コース別攻略</h2>
-  <div id="course攻略">
-    コースを選ぶと、攻略情報をここに表示します。
-  </div>
+<div class="card">
+  <h2>📝 コースメモ</h2>
+  <textarea id="courseMemo" rows="5" placeholder="このコースの攻略メモを自由に入力"></textarea>
+  <button class="primary" id="saveCourseMemo">メモを保存</button>
+  <p id="courseMemoStatus" class="muted">メモはまだ保存されていません。</p>
 </div>
+ <div class="card"><h2>サンダー発生率</h2><div class="statgrid"><div class="stat"><span>記録レース数</span><strong id="raceCount">0</strong></div><div class="stat"><span>サンダーあり</span><strong id="thunderCount">0</strong></div></div><div id="stats" class="muted" style="margin-top:12px">記録を追加すると、位置ごとの発生率が表示されます。</div></div>
+
 <div class="card"><h2>ショートカットの位置・メモ</h2><label for="shortcutSpot">マップ上の目印番号</label><select id="shortcutSpot"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select><label for="shortcutNote">メモ</label><textarea id="shortcutNote" placeholder="例：キノコがあれば右側の芝生を抜ける"></textarea><div class="btnrow"><button class="primary" id="addShortcut">↗ メモを追加</button></div><div id="shortcuts"></div></div>
  <div class="card"><h2>レース履歴</h2><div id="history" class="muted">まだ記録はありません。</div></div>
 </section>
@@ -100,7 +106,16 @@ function renderCourseGuide(){
 }
 function roadKey(){return '道中：'+document.getElementById('origin').value+' → '+document.getElementById('destination').value}
 function setPage(name){['Map','Record','Backup'].forEach(n=>{document.getElementById('page'+n).classList.toggle('hidden',n.toLowerCase()!==name);document.getElementById('tab'+n).classList.toggle('active',n.toLowerCase()===name)})}
-function openCourse(name){activeCourse=name;document.getElementById('activeTitle').textContent=name;setPage('record');renderRecord();window.scrollTo(0,0)}
+function openCourse(name){
+  activeCourse=name;
+  document.getElementById('activeTitle').textContent=name;
+  document.getElementById('courseMemo').value=
+    localStorage.getItem('courseMemo_'+name)||'';
+  document.getElementById('courseMemoStatus').textContent=
+    'このコースのメモを入力できます。';
+  setPage('record');
+  renderRecord();
+  window.scrollTo(0,0);
 function renderMap(){document.getElementById('circuitList').innerHTML=circuits.map((c,i)=>`<button class="course" data-course="${esc(c)}"><span>${['🏁','🌿','🌊','🌋'][i]}</span><strong>${esc(c)}</strong><small>攻略・サンダー記録</small></button>`).join('');document.querySelectorAll('[data-course]').forEach(b=>b.onclick=()=>openCourse(b.dataset.course));['origin','destination'].forEach(id=>{const el=document.getElementById(id);el.innerHTML=circuits.map(c=>`<option>${esc(c)}</option>`).join('')});document.getElementById('destination').value='サーキットB'}
 function renderRecord(){
 renderCourseGuide();
@@ -116,9 +131,40 @@ renderCourseGuide();
  document.getElementById('history').innerHTML=history.length?history.map(r=>`<div class="item"><div class="itemtext"><strong>${r.position?'⚡ サンダー：'+esc(r.position):'○ サンダーなし'}</strong><small>${esc(r.created||'記録')}</small></div><button class="danger tiny" data-del-race="${r.id}">削除</button></div>`).join(''):'<p class="muted">まだ記録はありません。</p>';
  document.querySelectorAll('[data-del-race]').forEach(b=>b.onclick=()=>{data.races=data.races.filter(r=>r.id!==Number(b.dataset.delRace));save();renderRecord()});
 }
-function addRace(position){if(position&&!/^\d+-\d+$/.test(position.trim())){alert('「3-2」の形式で入力してください。');return}data.races.push({id:Date.now()+Math.floor(Math.random()*1000),course:activeCourse,position:position?position.trim():'',created:new Date().toLocaleString('ja-JP')});if(save()){document.getElementById('thunderPosition').value='';renderRecord()}}
+function addRace(position){
+  if(position&&!/^\d+-\d+$/.test(position.trim())){
+    alert('「3-2」の形式で入力してください。');
+    return;
+  }
+  data.races.push({
+    id:Date.now()+Math.floor(Math.random()*1000),
+    course:activeCourse,
+    position:position?position.trim():'',
+    created:new Date().toLocaleString('ja-JP')
+  });
+  if(save()){
+    document.getElementById('thunderLap').value='';
+    document.getElementById('thunderSlot').value='';
+    renderRecord();
+  }
+}
 document.getElementById('tabMap').onclick=()=>setPage('map');document.getElementById('tabRecord').onclick=()=>{setPage('record');renderRecord()};document.getElementById('tabBackup').onclick=()=>setPage('backup');document.getElementById('backMap').onclick=()=>setPage('map');document.getElementById('openRoad').onclick=()=>{if(document.getElementById('origin').value===document.getElementById('destination').value){alert('出発地と到着地を別々に選んでください。');return}openCourse(roadKey())};
-document.getElementById('addThunder').onclick=()=>addRace(document.getElementById('thunderPosition').value);document.getElementById('addNoThunder').onclick=()=>addRace('');
+document.getElementById('addThunder').onclick=()=>{
+  const lap=document.getElementById('thunderLap').value;
+  const slot=document.getElementById('thunderSlot').value;
+  if(!lap||!slot){alert('発生位置の2つの数字を入力してください');return;}
+  addRace(lap+'-'+slot);
+};
+document.getElementById('addNoThunder').onclick=()=>addRace('');
+document.getElementById('saveCourseMemo').onclick=()=>{
+  if(!activeCourse){
+    alert('先にコースを選択してください');
+    return;
+  }
+  const memo=document.getElementById('courseMemo').value;
+  localStorage.setItem('courseMemo_'+activeCourse,memo);
+  document.getElementById('courseMemoStatus').textContent='保存しました！';
+
 document.getElementById('addShortcut').onclick=()=>{const note=document.getElementById('shortcutNote').value.trim();if(!note){alert('メモを入力してください。');return}data.shortcuts.push({id:Date.now()+Math.floor(Math.random()*1000),course:activeCourse,spot:document.getElementById('shortcutSpot').value,note,created:new Date().toLocaleString('ja-JP')});if(save()){document.getElementById('shortcutNote').value='';renderRecord()}};
 document.getElementById('exportData').onclick=()=>{const blob=new Blob([JSON.stringify({...data,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='world-track-note-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 document.getElementById('importData').onclick=()=>{const f=document.getElementById('importFile').files[0];if(!f){alert('バックアップファイルを選択してください。');return}const reader=new FileReader();reader.onload=()=>{try{const x=JSON.parse(reader.result);if(!x||!Array.isArray(x.races)||!Array.isArray(x.shortcuts))throw Error('invalid');if(!confirm('現在の記録をバックアップの内容で置き換えます。よろしいですか？'))return;data={version:1,races:x.races,shortcuts:x.shortcuts};if(save()){alert('バックアップを復元しました。');renderRecord();}}catch(e){alert('このファイルはバックアップとして読み込めませんでした。')}};reader.readAsText(f)};
