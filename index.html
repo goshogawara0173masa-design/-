@@ -166,11 +166,9 @@ document.getElementById('saveCourseMemo').onclick=()=>{
   localStorage.setItem('courseMemo_'+activeCourse,memo);
   document.getElementById('courseMemoStatus').textContent='保存しました！';
 };
-document.getElementById('courseMemoStatus').textContent='保存しました！';
 
-};
 
-document.getElementById('addShortcut').onclick=()=>{
+
 document.getElementById('addShortcut').onclick=()=>{const note=document.getElementById('shortcutNote').value.trim();if(!note){alert('メモを入力してください。');return}data.shortcuts.push({id:Date.now()+Math.floor(Math.random()*1000),course:activeCourse,spot:document.getElementById('shortcutSpot').value,note,created:new Date().toLocaleString('ja-JP')});if(save()){document.getElementById('shortcutNote').value='';renderRecord()}};
 document.getElementById('exportData').onclick=()=>{const blob=new Blob([JSON.stringify({...data,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='world-track-note-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 document.getElementById('importData').onclick=()=>{const f=document.getElementById('importFile').files[0];if(!f){alert('バックアップファイルを選択してください。');return}const reader=new FileReader();reader.onload=()=>{try{const x=JSON.parse(reader.result);if(!x||!Array.isArray(x.races)||!Array.isArray(x.shortcuts))throw Error('invalid');if(!confirm('現在の記録をバックアップの内容で置き換えます。よろしいですか？'))return;data={version:1,races:x.races,shortcuts:x.shortcuts};if(save()){alert('バックアップを復元しました。');renderRecord();}}catch(e){alert('このファイルはバックアップとして読み込めませんでした。')}};reader.readAsText(f)};
