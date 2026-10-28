@@ -24,12 +24,7 @@ main{max-width:760px;margin:auto;padding:14px}.tabs{display:flex;gap:8px;margin-
 <main>
 <div class="tabs"><button class="tab active" id="tabMap">🗺 コース選択</button><button class="tab" id="tabRecord">⚡ 記録・統計</button><button class="tab" id="tabBackup">💾 保存・バックアップ</button></div>
 <section id="pageMap">
- <div class="card"><h2>ワールドマップ</h2>
- <svg class="map" viewBox="0 0 340 160" role="img" aria-label="コース選択用の仮マップ">
- <rect width="340" height="160" rx="14" fill="#dce9d2"/><path d="M0 24 Q70 2 112 31 T222 27 T340 18 L340 53 Q260 42 222 66 T105 64 T0 80Z" fill="#c2dbb2"/><path d="M0 118 Q56 83 100 111 T211 112 T340 121 L340 160 L0 160Z" fill="#c2dbb2"/>
- <path d="M28 100 C18 47 80 22 122 55 S184 131 228 94 S292 34 315 78" stroke="#fff" stroke-width="21" fill="none" stroke-linecap="round"/><path d="M28 100 C18 47 80 22 122 55 S184 131 228 94 S292 34 315 78" stroke="#7d8b80" stroke-width="2" stroke-dasharray="5 5" fill="none"/>
- <g font-size="11" font-weight="700" text-anchor="middle" fill="#fff"><circle cx="66" cy="43" r="12" fill="#285b45"/><text x="66" y="47">A</text><circle cx="163" cy="92" r="12" fill="#285b45"/><text x="163" y="96">B</text><circle cx="278" cy="52" r="12" fill="#285b45"/><text x="278" y="56">C</text></g>
- </svg><p class="mapnote">※ ここは操作確認用のイメージマップです。ゲーム内の正確な地形・コース配置ではありません。</p></div>
+
  <div class="card"><h2>サーキットを選ぶ</h2><p class="muted">選んだコースごとに、サンダー履歴とショートカットメモを管理します。</p><div class="grid" id="circuitList"></div></div>
  <div class="card"><h2>道中コース</h2><p class="muted">出発地と到着地の組み合わせごとに別のコースとして保存します。</p>
  <div class="row"><div><label for="origin">出発サーキット</label><select id="origin"></select></div><div><label for="destination">到着サーキット</label><select id="destination"></select></div></div>
