@@ -115,7 +115,7 @@ function openCourse(name){
   renderRecord();
   window.scrollTo(0,0);
   }
-function renderMap(){document.getElementById('circuitList').innerHTML=circuits.map((c,i)=>`<button class="course" data-course="${esc(c)}"><span>${['🏁','🌿','🌊','🌋'][i]}</span><strong>${esc(c)}</strong><small>攻略・サンダー記録</small></button>`).join('');document.querySelectorAll('[data-course]').forEach(b=>b.onclick=()=>openCourse(b.dataset.course));['origin','destination'].forEach(id=>{const el=document.getElementById(id);el.innerHTML=circuits.map(c=>`<option>${esc(c)}</option>`).join('')});document.getElementById('destination').value='サーキットB'}
+function renderMap(){document.getElementById('circuitList').innerHTML=circuits.map((c,i)=>`<button class="course" data-course="${esc(c)}"><strong>${esc(c)}</strong><small>攻略・サンダー記録</small></button>`).join('');document.querySelectorAll('[data-course]').forEach(b=>b.onclick=()=>openCourse(b.dataset.course));['origin','destination'].forEach(id=>{const el=document.getElementById(id);el.innerHTML=circuits.map(c=>`<option>${esc(c)}</option>`).join('')});document.getElementById('destination').value='サーキットB'}
 function renderRecord(){
 
  const races=data.races.filter(r=>r.course===activeCourse), thunder=races.filter(r=>r.position);
