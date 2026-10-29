@@ -32,7 +32,15 @@ main{max-width:760px;margin:auto;padding:14px}.tabs{display:flex;gap:8px;margin-
 </section>
 <section id="pageRecord" class="hidden">
  <div class="card"><button class="secondary tiny" id="backMap">← コース選択へ</button><h2 id="activeTitle" style="margin-top:12px">コース</h2><p class="muted">このコースの記録は端末内に自動保存されます。</p></div>
- <div class="card"><h2>サンダーを記録</h2><p class="muted">位置は「周回-アイテム位置」の形式で入力（例：3-2）。サンダーが出なかったレースも必ず記録すると、発生率が正しく計算できます。</p>
+ <div class="card"><h2>サンダー発生率</h2><div class="statgrid"><div class="stat"><span>記録レース数</span><strong id="raceCount">0</strong></div><div class="stat"><span>サンダーあり</span><strong id="thunderCount">0</strong></div></div><div id="stats" class="muted" style="margin-top:12px">記録を追加すると、位置ごとの発生率が表示されます。</div></div>
+
+<div class="card">
+  <h2>📝 コースメモ</h2>
+  <textarea id="courseMemo" rows="5" placeholder="このコースの攻略メモを自由に入力"></textarea>
+  <button class="primary" id="saveCourseMemo">メモを保存</button>
+  <p id="courseMemoStatus" class="muted">メモはまだ保存されていません。</p>
+</div>
+<div class="card"><h2>サンダーを記録</h2><p class="muted">位置は「周回-アイテム位置」の形式で入力（例：3-2）。サンダーが出なかったレースも必ず記録すると、発生率が正しく計算できます。</p>
 <label>発生位置</label>
 <div style="display:flex;align-items:center;gap:8px">
   <input id="thunderLap" type="number" inputmode="numeric" min="1" placeholder="3">
@@ -41,13 +49,7 @@ main{max-width:760px;margin:auto;padding:14px}.tabs{display:flex;gap:8px;margin-
 </div>
  <div class="btnrow"><button class="primary" id="addThunder">⚡ サンダーあり</button><button class="secondary" id="addNoThunder">○ サンダーなし</button></div>
  </div>
-<div class="card">
-  <h2>📝 コースメモ</h2>
-  <textarea id="courseMemo" rows="5" placeholder="このコースの攻略メモを自由に入力"></textarea>
-  <button class="primary" id="saveCourseMemo">メモを保存</button>
-  <p id="courseMemoStatus" class="muted">メモはまだ保存されていません。</p>
-</div>
- <div class="card"><h2>サンダー発生率</h2><div class="statgrid"><div class="stat"><span>記録レース数</span><strong id="raceCount">0</strong></div><div class="stat"><span>サンダーあり</span><strong id="thunderCount">0</strong></div></div><div id="stats" class="muted" style="margin-top:12px">記録を追加すると、位置ごとの発生率が表示されます。</div></div>
+
 
 
  <div class="card"><h2>レース履歴</h2><div id="history" class="muted">まだ記録はありません。</div></div>
